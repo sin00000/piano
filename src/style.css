@@ -1,0 +1,291 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    /* Set by JS at runtime */
+    --wk-w: 56px;
+    --wk-gap: 3px;
+    --wk-h: 218px;
+    --bk-w: 35px;
+    --bk-h: 130px;
+}
+
+body {
+    user-select: none;
+    background: #080808;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Helvetica Neue', 'Arial Black', Helvetica, Arial, sans-serif;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.page {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+    padding: 32px 16px 40px;
+}
+
+.page-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.page-title {
+    font-family: 'Helvetica Neue', Helvetica, Arial, monospace;
+    font-weight: 900;
+    font-size: clamp(1rem, 2.5vw, 1.4rem);
+    color: #444;
+    letter-spacing: 0.04em;
+}
+
+.page-sub {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-weight: 400;
+    font-size: 0.7rem;
+    color: #2a2a2a;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+/* ── Keyboard container ── */
+
+.keyboard-scroll {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: visible;
+    padding-bottom: 16px;
+    display: flex;
+    justify-content: center;
+}
+
+.keyboard-scroll::-webkit-scrollbar {
+    height: 4px;
+}
+.keyboard-scroll::-webkit-scrollbar-track {
+    background: #111;
+}
+.keyboard-scroll::-webkit-scrollbar-thumb {
+    background: #2a2a2a;
+    border-radius: 2px;
+}
+
+.keyboard {
+    position: relative;
+    flex-shrink: 0;
+}
+
+/* ── Keys ── */
+
+.key {
+    position: absolute;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    padding-bottom: 7px;
+    cursor: pointer;
+    border-radius: 0 0 7px 7px;
+    overflow: hidden;
+    transition: transform 0.08s ease;
+}
+
+.key::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--key-color, transparent);
+    opacity: 0;
+    transition: opacity 0.07s ease;
+    border-radius: inherit;
+}
+
+.key.active {
+    transform: scaleY(0.975);
+    transform-origin: top center;
+}
+
+.key.active::before {
+    opacity: 0.78;
+}
+
+.key.release::before {
+    opacity: 0;
+    transition: opacity 0.65s ease;
+}
+
+/* White key */
+.white-key {
+    background: #111;
+    border: 1.5px solid #252525;
+    border-top: none;
+    z-index: 1;
+    width: var(--wk-w);
+    height: var(--wk-h);
+}
+
+.white-key.active {
+    border-color: var(--key-color);
+    box-shadow:
+        0 0 20px color-mix(in srgb, var(--key-color) 60%, transparent),
+        0 0 50px color-mix(in srgb, var(--key-color) 30%, transparent);
+}
+
+.white-key.release {
+    border-color: #252525;
+    box-shadow: none;
+    transition: border-color 0.65s ease, box-shadow 0.65s ease, transform 0.12s ease;
+}
+
+/* Black key */
+.black-key {
+    background: #0a0a0a;
+    border: 1.5px solid #2a2a2a;
+    border-top: none;
+    z-index: 3;
+    width: var(--bk-w);
+    height: var(--bk-h);
+}
+
+.black-key.active {
+    border-color: var(--key-color);
+    box-shadow:
+        0 0 14px color-mix(in srgb, var(--key-color) 70%, transparent),
+        0 0 32px color-mix(in srgb, var(--key-color) 35%, transparent);
+}
+
+.black-key.release {
+    border-color: #2a2a2a;
+    box-shadow: none;
+    transition: border-color 0.65s ease, box-shadow 0.65s ease, transform 0.12s ease;
+}
+
+/* ── Code-block inner ── */
+
+.key-inner {
+    position: relative;
+    z-index: 2;
+    background: #181818;
+    border: 1px solid #2e2e2e;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 5px 3px 4px;
+    width: calc(100% - 8px);
+    gap: 2px;
+    transition: background 0.07s ease, border-color 0.07s ease;
+}
+
+.key.active .key-inner {
+    background: rgba(0, 0, 0, 0.38);
+    border-color: rgba(255, 255, 255, 0.22);
+}
+
+/* White key labels */
+.key-label {
+    font-family: 'Helvetica Neue', 'Arial Black', Helvetica, Arial, sans-serif;
+    font-weight: 900;
+    font-size: clamp(0.65rem, calc(var(--wk-w) * 0.22), 1.05rem);
+    color: #d8d8d8;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    text-align: center;
+    transition: color 0.07s ease;
+}
+
+.key.active .key-label {
+    color: #fff;
+}
+
+.key-note {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-weight: 700;
+    font-size: clamp(0.48rem, calc(var(--wk-w) * 0.14), 0.65rem);
+    color: #3a3a3a;
+    letter-spacing: 0.04em;
+    transition: color 0.07s ease;
+}
+
+.key.active .key-note {
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.key-freq {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-weight: 400;
+    font-size: clamp(0.42rem, calc(var(--wk-w) * 0.12), 0.58rem);
+    color: #2a2a2a;
+    letter-spacing: 0.03em;
+    transition: color 0.07s ease;
+}
+
+.key.active .key-freq {
+    color: rgba(255, 255, 255, 0.38);
+}
+
+/* ── Black key inner ── */
+
+.bk-inner {
+    padding: 4px 2px 3px;
+    gap: 1px;
+}
+
+.bk-label {
+    font-size: clamp(0.55rem, calc(var(--bk-w) * 0.28), 0.72rem);
+}
+
+.bk-sub {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-weight: 400;
+    font-size: clamp(0.38rem, calc(var(--bk-w) * 0.18), 0.5rem);
+    color: #2e2e2e;
+    letter-spacing: 0.02em;
+    transition: color 0.07s ease;
+}
+
+.key.active .bk-sub {
+    color: rgba(255, 255, 255, 0.45);
+}
+
+/* ── Ripple ── */
+
+.ripple {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.35);
+    transform: scale(0);
+    animation: ripple-out 0.45s ease-out forwards;
+    pointer-events: none;
+    z-index: 10;
+}
+
+@keyframes ripple-out {
+    to {
+        transform: scale(18);
+        opacity: 0;
+    }
+}
+
+/* ── Octave divider ── */
+
+.octave-divider {
+    position: absolute;
+    top: 0;
+    width: 2px;
+    background: #1e1e1e;
+    z-index: 2;
+    pointer-events: none;
+}
