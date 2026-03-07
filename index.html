@@ -9,15 +9,45 @@
 </head>
 
 <body>
-    <div class="page">
-        <header class="page-header">
-            <span class="page-title">// piano.tiles</span>
-            <span class="page-sub">2 octaves · C4 – B5</span>
+    <div class="app">
+
+        <header class="top-bar">
+            <div class="brand">
+                <span class="brand-title">// piano.tiles</span>
+                <span class="brand-sub">2 oct · C4 – B5</span>
+            </div>
+            <div class="seq-controls">
+                <span class="ctrl-label">BPM</span>
+                <input type="range" id="bpmSlider" min="60" max="200" value="120" class="bpm-slider">
+                <span id="bpmDisplay" class="bpm-val">120</span>
+                <div class="ctrl-divider"></div>
+                <span class="ctrl-label">SWING</span>
+                <input type="range" id="swingSlider" min="0" max="66" value="33" class="bpm-slider">
+                <div class="ctrl-divider"></div>
+                <span class="ctrl-label">SYNC</span>
+                <input type="range" id="syncSlider" min="0" max="100" value="35" class="bpm-slider">
+                <button id="playBtn" class="play-btn">&#9654;</button>
+            </div>
         </header>
-        <div class="keyboard-scroll">
-            <div class="keyboard" id="keyboard"></div>
-        </div>
+
+        <main class="content">
+
+            <section class="piano-section">
+                <div class="keyboard-scroll">
+                    <div class="keyboard" id="keyboard"></div>
+                </div>
+            </section>
+
+            <aside class="drum-section">
+                <div class="drum-label">BEAT GRID</div>
+                <div class="beat-grid" id="beatGrid"></div>
+                <div class="drum-label" style="margin-top:14px">PALETTE</div>
+                <div class="drum-palette" id="drumPalette"></div>
+            </aside>
+
+        </main>
     </div>
+
     <script type="module" src="./src/main.js"></script>
 </body>
 

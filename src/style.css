@@ -5,77 +5,184 @@
 }
 
 :root {
-    /* Set by JS at runtime */
-    --wk-w: 56px;
+    /* Piano key sizes – set by JS */
+    --wk-w: 52px;
     --wk-gap: 3px;
-    --wk-h: 218px;
-    --bk-w: 35px;
-    --bk-h: 130px;
+    --wk-h: 203px;
+    --bk-w: 32px;
+    --bk-h: 121px;
+
+    /* Drum section */
+    --drum-w: 272px;
+    --cell-gap: 6px;
 }
+
+/* ── Base ─────────────────────────────────────────────────────────────────── */
 
 body {
     user-select: none;
     background: #080808;
     min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     font-family: 'Helvetica Neue', 'Arial Black', Helvetica, Arial, sans-serif;
     -webkit-tap-highlight-color: transparent;
+    overflow: hidden;
 }
 
-.page {
-    width: 100%;
+/* ── App shell ────────────────────────────────────────────────────────────── */
+
+.app {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 28px;
-    padding: 32px 16px 40px;
+    height: 100vh;
 }
 
-.page-header {
+/* ── Top bar ──────────────────────────────────────────────────────────────── */
+
+.top-bar {
+    flex-shrink: 0;
+    height: 52px;
     display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: 4px;
+    justify-content: space-between;
+    padding: 0 20px;
+    border-bottom: 1px solid #161616;
+    background: #080808;
 }
 
-.page-title {
-    font-family: 'Helvetica Neue', Helvetica, Arial, monospace;
+.brand {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+}
+
+.brand-title {
     font-weight: 900;
-    font-size: clamp(1rem, 2.5vw, 1.4rem);
-    color: #444;
+    font-size: 0.95rem;
+    color: #3a3a3a;
     letter-spacing: 0.04em;
 }
 
-.page-sub {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+.brand-sub {
     font-weight: 400;
-    font-size: 0.7rem;
-    color: #2a2a2a;
+    font-size: 0.62rem;
+    color: #202020;
     letter-spacing: 0.1em;
     text-transform: uppercase;
 }
 
-/* ── Keyboard container ── */
+.seq-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.ctrl-label {
+    font-weight: 700;
+    font-size: 0.62rem;
+    color: #333;
+    letter-spacing: 0.08em;
+}
+
+.bpm-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 90px;
+    height: 3px;
+    background: #222;
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+}
+
+.bpm-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #3a3a3a;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.bpm-slider::-webkit-slider-thumb:hover {
+    background: #666;
+}
+
+.ctrl-divider {
+    width: 1px;
+    height: 18px;
+    background: #1a1a1a;
+    flex-shrink: 0;
+}
+
+.bpm-val {
+    font-weight: 900;
+    font-size: 0.8rem;
+    color: #444;
+    width: 28px;
+    text-align: right;
+    letter-spacing: -0.02em;
+}
+
+.play-btn {
+    background: #151515;
+    border: 1.5px solid #252525;
+    border-radius: 6px;
+    color: #555;
+    font-size: 0.75rem;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.12s, border-color 0.12s, color 0.12s;
+}
+
+.play-btn:hover {
+    background: #1e1e1e;
+    border-color: #333;
+    color: #888;
+}
+
+.play-btn.active {
+    background: #1a2a1a;
+    border-color: #2a5a2a;
+    color: #44cc44;
+}
+
+/* ── Content area ─────────────────────────────────────────────────────────── */
+
+.content {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* ── Piano section ────────────────────────────────────────────────────────── */
+
+.piano-section {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 20px 16px;
+}
 
 .keyboard-scroll {
-    width: 100%;
     overflow-x: auto;
-    overflow-y: visible;
-    padding-bottom: 16px;
-    display: flex;
-    justify-content: center;
+    overflow-y: hidden;
+    max-width: 100%;
+    padding-bottom: 8px;
 }
 
 .keyboard-scroll::-webkit-scrollbar {
-    height: 4px;
+    height: 3px;
 }
-.keyboard-scroll::-webkit-scrollbar-track {
-    background: #111;
-}
+.keyboard-scroll::-webkit-scrollbar-track { background: transparent; }
 .keyboard-scroll::-webkit-scrollbar-thumb {
-    background: #2a2a2a;
+    background: #1e1e1e;
     border-radius: 2px;
 }
 
@@ -84,7 +191,7 @@ body {
     flex-shrink: 0;
 }
 
-/* ── Keys ── */
+/* ── Piano keys ───────────────────────────────────────────────────────────── */
 
 .key {
     position: absolute;
@@ -115,19 +222,16 @@ body {
     transform-origin: top center;
 }
 
-.key.active::before {
-    opacity: 0.78;
-}
+.key.active::before { opacity: 0.78; }
 
 .key.release::before {
     opacity: 0;
     transition: opacity 0.65s ease;
 }
 
-/* White key */
 .white-key {
     background: #111;
-    border: 1.5px solid #252525;
+    border: 1.5px solid #222;
     border-top: none;
     z-index: 1;
     width: var(--wk-w);
@@ -136,21 +240,19 @@ body {
 
 .white-key.active {
     border-color: var(--key-color);
-    box-shadow:
-        0 0 20px color-mix(in srgb, var(--key-color) 60%, transparent),
-        0 0 50px color-mix(in srgb, var(--key-color) 30%, transparent);
+    box-shadow: 0 0 18px color-mix(in srgb, var(--key-color) 55%, transparent),
+                0 0 44px color-mix(in srgb, var(--key-color) 25%, transparent);
 }
 
 .white-key.release {
-    border-color: #252525;
+    border-color: #222;
     box-shadow: none;
-    transition: border-color 0.65s ease, box-shadow 0.65s ease, transform 0.12s ease;
+    transition: border-color 0.65s, box-shadow 0.65s, transform 0.12s;
 }
 
-/* Black key */
 .black-key {
-    background: #0a0a0a;
-    border: 1.5px solid #2a2a2a;
+    background: #090909;
+    border: 1.5px solid #282828;
     border-top: none;
     z-index: 3;
     width: var(--bk-w);
@@ -159,24 +261,23 @@ body {
 
 .black-key.active {
     border-color: var(--key-color);
-    box-shadow:
-        0 0 14px color-mix(in srgb, var(--key-color) 70%, transparent),
-        0 0 32px color-mix(in srgb, var(--key-color) 35%, transparent);
+    box-shadow: 0 0 12px color-mix(in srgb, var(--key-color) 65%, transparent),
+                0 0 28px color-mix(in srgb, var(--key-color) 30%, transparent);
 }
 
 .black-key.release {
-    border-color: #2a2a2a;
+    border-color: #282828;
     box-shadow: none;
-    transition: border-color 0.65s ease, box-shadow 0.65s ease, transform 0.12s ease;
+    transition: border-color 0.65s, box-shadow 0.65s, transform 0.12s;
 }
 
-/* ── Code-block inner ── */
+/* Key inner (code block) */
 
 .key-inner {
     position: relative;
     z-index: 2;
     background: #181818;
-    border: 1px solid #2e2e2e;
+    border: 1px solid #2a2a2a;
     border-radius: 5px;
     display: flex;
     flex-direction: column;
@@ -184,57 +285,43 @@ body {
     padding: 5px 3px 4px;
     width: calc(100% - 8px);
     gap: 2px;
-    transition: background 0.07s ease, border-color 0.07s ease;
+    transition: background 0.07s, border-color 0.07s;
 }
 
 .key.active .key-inner {
-    background: rgba(0, 0, 0, 0.38);
-    border-color: rgba(255, 255, 255, 0.22);
+    background: rgba(0,0,0,0.35);
+    border-color: rgba(255,255,255,0.2);
 }
 
-/* White key labels */
 .key-label {
-    font-family: 'Helvetica Neue', 'Arial Black', Helvetica, Arial, sans-serif;
     font-weight: 900;
-    font-size: clamp(0.65rem, calc(var(--wk-w) * 0.22), 1.05rem);
-    color: #d8d8d8;
+    font-size: clamp(0.6rem, calc(var(--wk-w) * 0.21), 1rem);
+    color: #d0d0d0;
     line-height: 1;
     letter-spacing: -0.02em;
-    text-align: center;
-    transition: color 0.07s ease;
+    transition: color 0.07s;
 }
 
-.key.active .key-label {
-    color: #fff;
-}
+.key.active .key-label { color: #fff; }
 
 .key-note {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-weight: 700;
-    font-size: clamp(0.48rem, calc(var(--wk-w) * 0.14), 0.65rem);
-    color: #3a3a3a;
+    font-size: clamp(0.44rem, calc(var(--wk-w) * 0.13), 0.6rem);
+    color: #333;
     letter-spacing: 0.04em;
-    transition: color 0.07s ease;
+    transition: color 0.07s;
 }
 
-.key.active .key-note {
-    color: rgba(255, 255, 255, 0.55);
-}
+.key.active .key-note { color: rgba(255,255,255,0.5); }
 
 .key-freq {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-weight: 400;
-    font-size: clamp(0.42rem, calc(var(--wk-w) * 0.12), 0.58rem);
-    color: #2a2a2a;
-    letter-spacing: 0.03em;
-    transition: color 0.07s ease;
+    font-size: clamp(0.38rem, calc(var(--wk-w) * 0.11), 0.54rem);
+    color: #252525;
+    transition: color 0.07s;
 }
 
-.key.active .key-freq {
-    color: rgba(255, 255, 255, 0.38);
-}
-
-/* ── Black key inner ── */
+.key.active .key-freq { color: rgba(255,255,255,0.35); }
 
 .bk-inner {
     padding: 4px 2px 3px;
@@ -242,50 +329,265 @@ body {
 }
 
 .bk-label {
-    font-size: clamp(0.55rem, calc(var(--bk-w) * 0.28), 0.72rem);
+    font-size: clamp(0.48rem, calc(var(--bk-w) * 0.26), 0.68rem);
 }
 
 .bk-sub {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-weight: 400;
-    font-size: clamp(0.38rem, calc(var(--bk-w) * 0.18), 0.5rem);
-    color: #2e2e2e;
-    letter-spacing: 0.02em;
-    transition: color 0.07s ease;
+    font-size: clamp(0.36rem, calc(var(--bk-w) * 0.17), 0.48rem);
+    color: #282828;
+    transition: color 0.07s;
 }
 
-.key.active .bk-sub {
-    color: rgba(255, 255, 255, 0.45);
+.key.active .bk-sub { color: rgba(255,255,255,0.4); }
+
+/* Octave divider */
+.octave-divider {
+    position: absolute;
+    top: 0;
+    width: 2px;
+    background: #161616;
+    z-index: 2;
+    pointer-events: none;
 }
 
-/* ── Ripple ── */
-
+/* Ripple */
 .ripple {
     position: absolute;
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.35);
+    background: rgba(255,255,255,0.3);
     transform: scale(0);
-    animation: ripple-out 0.45s ease-out forwards;
+    animation: ripple-out 0.4s ease-out forwards;
     pointer-events: none;
     z-index: 10;
 }
 
 @keyframes ripple-out {
-    to {
-        transform: scale(18);
-        opacity: 0;
-    }
+    to { transform: scale(16); opacity: 0; }
 }
 
-/* ── Octave divider ── */
+/* ── Drum section ─────────────────────────────────────────────────────────── */
 
-.octave-divider {
+.drum-section {
+    width: var(--drum-w);
+    flex-shrink: 0;
+    border-left: 1px solid #111;
+    display: flex;
+    flex-direction: column;
+    padding: 16px 14px 20px;
+    gap: 8px;
+    overflow-y: auto;
+}
+
+.drum-label {
+    font-weight: 900;
+    font-size: 0.6rem;
+    color: #2a2a2a;
+    letter-spacing: 0.12em;
+}
+
+/* 3×3 grid for both beat grid and palette */
+.beat-grid,
+.drum-palette {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--cell-gap);
+}
+
+/* ── Beat cells ───────────────────────────────────────────────────────────── */
+
+.beat-cell {
+    aspect-ratio: 1;
+    background: #0d0d0d;
+    border: 1.5px dashed #1e1e1e;
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: border-color 0.12s, background 0.12s;
+    overflow: hidden;
+}
+
+.beat-cell::after {
+    content: '+';
+    font-weight: 900;
+    font-size: 1rem;
+    color: #1a1a1a;
+    pointer-events: none;
+    transition: color 0.12s;
+}
+
+.beat-cell.has-block::after { display: none; }
+
+.beat-cell.drop-hover {
+    border-color: #333;
+    background: #141414;
+}
+
+/* Column playhead */
+.beat-cell.playing {
+    background: #131313;
+}
+
+/* Step indicator dots on playhead */
+.beat-cell.playing-col-marker {
+    border-top-color: #2a2a2a;
+}
+
+/* ── Drum block tile ──────────────────────────────────────────────────────── */
+
+.drum-block {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: grab;
+    border-radius: 5px;
+    overflow: hidden;
+    position: relative;
+}
+
+.drum-block::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--drum-color, transparent);
+    opacity: 0;
+    transition: opacity 0.08s;
+    border-radius: inherit;
+}
+
+.drum-block.drum-hit::before {
+    opacity: 0.55;
+    animation: hit-fade 0.28s ease-out forwards;
+}
+
+@keyframes hit-fade {
+    0%   { opacity: 0.6; }
+    100% { opacity: 0; }
+}
+
+.block-inner {
+    position: relative;
+    z-index: 1;
+    background: #161616;
+    border: 1.5px solid #2a2a2a;
+    border-radius: 5px;
+    width: calc(100% - 10px);
+    height: calc(100% - 10px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    transition: border-color 0.08s, background 0.08s;
+}
+
+.drum-block:hover .block-inner {
+    border-color: #333;
+    background: #1a1a1a;
+}
+
+.drum-block.drum-hit .block-inner {
+    border-color: var(--drum-color);
+    background: color-mix(in srgb, var(--drum-color) 18%, #161616);
+}
+
+.block-label {
+    font-weight: 900;
+    font-size: clamp(0.52rem, 1.4vw, 0.72rem);
+    color: #c8c8c8;
+    letter-spacing: 0.04em;
+    line-height: 1;
+}
+
+.block-sub {
+    font-weight: 400;
+    font-size: clamp(0.4rem, 1vw, 0.54rem);
+    color: #303030;
+    letter-spacing: 0.06em;
+    line-height: 1;
+}
+
+.drum-block.drum-hit .block-label { color: #fff; }
+.drum-block.drum-hit .block-sub   { color: rgba(255,255,255,0.5); }
+
+/* Palette blocks – slightly different treatment */
+.drum-palette .drum-block {
+    cursor: grab;
+}
+
+.drum-palette .drum-block:active {
+    cursor: grabbing;
+}
+
+/* ── Drag clone ───────────────────────────────────────────────────────────── */
+
+.drag-clone {
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.88;
+    border-radius: 7px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.6),
+                0 0 20px color-mix(in srgb, var(--drum-color, #fff) 30%, transparent);
+}
+
+.drag-clone .block-inner {
+    border-color: var(--drum-color);
+    background: color-mix(in srgb, var(--drum-color) 12%, #161616);
+}
+
+/* ── Step playhead column line ────────────────────────────────────────────── */
+
+.step-line {
     position: absolute;
     top: 0;
+    left: 0;
     width: 2px;
+    height: 100%;
     background: #1e1e1e;
-    z-index: 2;
+    border-radius: 1px;
     pointer-events: none;
+    transition: left 0.05s ease;
+}
+
+/* ── Responsive ───────────────────────────────────────────────────────────── */
+
+@media (max-width: 767px) {
+    body { overflow-y: auto; }
+
+    .content {
+        flex-direction: column;
+        overflow: visible;
+    }
+
+    .piano-section {
+        padding: 16px 12px 8px;
+    }
+
+    .drum-section {
+        width: 100%;
+        border-left: none;
+        border-top: 1px solid #111;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 16px 12px 24px;
+    }
+
+    .drum-label {
+        width: 100%;
+        margin-top: 0 !important;
+    }
+
+    .beat-grid,
+    .drum-palette {
+        flex: 1;
+        min-width: 180px;
+    }
 }
