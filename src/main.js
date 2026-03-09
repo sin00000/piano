@@ -311,6 +311,19 @@ function addPianoEvents(el, freq) {
     el.addEventListener('touchcancel',off);
 }
 
+// ── Keyboard shortcut mapping ─────────────────────────────────────────────
+//  e.code 기반 (키보드 언어 설정 무관하게 물리적 위치로 매핑)
+//  White keys : A S D F G H J | K L ; ' [ ] \
+//  Black keys : W E   T Y U   | I O   P - =
+const WHITE_LABELS = ['A','S','D','F','G','H','J','K','L',';',"'",'[',']','\\'];
+const WHITE_CODES  = ['KeyA','KeyS','KeyD','KeyF','KeyG','KeyH','KeyJ',
+                      'KeyK','KeyL','Semicolon','Quote','BracketLeft','BracketRight','Backslash'];
+const BLACK_LABELS = ['W','E','T','Y','U','I','O','P','-','='];
+const BLACK_CODES  = ['KeyW','KeyE','KeyT','KeyY','KeyU',
+                      'KeyI','KeyO','KeyP','Minus','Equal'];
+
+const codeMap = {};   // e.code → { freq, el }
+
 // Build keyboard
 const keyboard = document.getElementById('keyboard');
 const TOTAL_W  = 14 * WK_W + 13 * WK_GAP;
@@ -318,18 +331,22 @@ keyboard.style.width  = TOTAL_W + 'px';
 keyboard.style.height = WK_H   + 'px';
 
 WHITE_NOTES.forEach((n, i) => {
+    const label = WHITE_LABELS[i] ?? '';
+    const code  = WHITE_CODES[i]  ?? '';
     const el = document.createElement('div');
     el.className = 'key white-key';
     el.style.left = whiteLeft(i) + 'px';
     el.style.setProperty('--key-color', noteColor(n.semitone));
     el.innerHTML = `
         <div class="key-inner">
+            ${label ? `<span class="key-kbd">${label}</span>` : ''}
             <span class="key-label">${n.label}</span>
             <span class="key-note">${n.note}</span>
             <span class="key-freq">${n.freq}</span>
         </div>`;
     addPianoEvents(el, n.freq);
     keyboard.appendChild(el);
+    if (code) codeMap[code] = { freq: n.freq, el };
 });
 
 // Octave divider
@@ -339,18 +356,46 @@ div.style.left  = (whiteLeft(7) - WK_GAP / 2 - 1) + 'px';
 div.style.height = WK_H + 'px';
 keyboard.appendChild(div);
 
-BLACK_NOTES.forEach(n => {
+BLACK_NOTES.forEach((n, i) => {
+    const label = BLACK_LABELS[i] ?? '';
+    const code  = BLACK_CODES[i]  ?? '';
     const el = document.createElement('div');
     el.className = 'key black-key';
     el.style.left = blackLeft(n.wOffset) + 'px';
     el.style.setProperty('--key-color', noteColor(n.semitone));
     el.innerHTML = `
         <div class="key-inner bk-inner">
+            ${label ? `<span class="key-kbd bk-kbd">${label}</span>` : ''}
             <span class="key-label bk-label">${n.label}</span>
-            <span class="bk-sub">${n.sub}</span>
         </div>`;
     addPianoEvents(el, n.freq);
     keyboard.appendChild(el);
+    if (code) codeMap[code] = { freq: n.freq, el };
+});
+
+// ── Keyboard event handlers (e.code = 물리적 키 위치, 언어 무관) ─────────
+const pressedCodes = new Set();
+
+document.addEventListener('keydown', e => {
+    if (e.repeat || e.target.tagName === 'INPUT') return;
+    const entry = codeMap[e.code];
+    if (!entry || pressedCodes.has(e.code)) return;
+    pressedCodes.add(e.code);
+    e.preventDefault();
+    const { freq, el } = entry;
+    el.classList.remove('release');
+    el.classList.add('active');
+    playPianoNote(freq);
+});
+
+document.addEventListener('keyup', e => {
+    const entry = codeMap[e.code];
+    if (!entry) return;
+    pressedCodes.delete(e.code);
+    const { el } = entry;
+    el.classList.remove('active');
+    el.classList.add('release');
+    setTimeout(() => el.classList.remove('release'), 700);
 });
 
 // ══════════════════════════════════════════════════════════════════════════

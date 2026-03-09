@@ -322,6 +322,24 @@ body {
     border-color: rgba(255, 255, 255, 0.2);
 }
 
+.key-kbd {
+    font-weight: 700;
+    font-size: clamp(0.42rem, calc(var(--wk-w) * 0.13), 0.56rem);
+    color: #3a3a3a;
+    letter-spacing: 0.04em;
+    line-height: 1;
+    transition: color 0.07s;
+}
+
+.key.active .key-kbd { color: rgba(255, 255, 255, 0.45); }
+
+.bk-kbd {
+    font-size: clamp(0.36rem, calc(var(--bk-w) * 0.19), 0.48rem);
+    color: #383838;
+}
+
+.key.active .bk-kbd { color: rgba(255, 255, 255, 0.4); }
+
 .key-label {
     font-weight: 900;
     font-size: clamp(0.6rem, calc(var(--wk-w) * 0.21), 1rem);
