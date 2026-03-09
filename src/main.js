@@ -1,3 +1,6 @@
+// 페이지 스크롤 완전 차단 (keyboard-scroll, drum-section은 CSS touch-action으로 허용)
+document.addEventListener('touchmove', e => e.preventDefault(), { passive: false });
+
 // ══════════════════════════════════════════════════════════════════════════
 // DATA
 // ══════════════════════════════════════════════════════════════════════════
@@ -230,14 +233,33 @@ function noteColor(semitone) {
     return `hsl(${Math.round((semitone / 12) * 360)}, 100%, 58%)`;
 }
 
-// Compute piano key dimensions based on available width
-const DRUM_SECTION_W = window.innerWidth < 768 ? 0 : 272;
-const PIANO_AVAIL    = window.innerWidth - DRUM_SECTION_W - (window.innerWidth < 768 ? 24 : 52);
-const WK_W           = Math.min(64, Math.max(38, PIANO_AVAIL / 14));
-const WK_GAP         = 3;
-const WK_H           = WK_W * 3.9;
-const BK_W           = WK_W * 0.62;
-const BK_H           = WK_H * 0.595;
+// Compute piano key dimensions to fit both width AND height of the piano section
+// Breakpoints mirror the CSS media queries
+const vw = window.innerWidth;
+const vh = window.innerHeight;
+const IS_MOBILE      = vw < 768;
+const IS_LANDSCAPE_S = !IS_MOBILE && vw < 900 && vh < 500; // 모바일 가로
+const TOPBAR_H       = IS_LANDSCAPE_S ? 38 : IS_MOBILE ? 44 : 52;
+const DRUM_W         = IS_MOBILE ? 0 : (IS_LANDSCAPE_S ? 220 : vw < 1024 ? 232 : 272);
+const H_PADDING      = IS_MOBILE ? 16 : 32;         // piano-section 상하 패딩
+const W_PADDING      = IS_MOBILE ? 20 : 28;         // 좌우 패딩
+
+// 가로 기반 WK_W
+const PIANO_AVAIL_W  = vw - DRUM_W - W_PADDING;
+const WK_W_from_w    = Math.min(64, Math.max(38, PIANO_AVAIL_W / 14));
+
+// 세로 기반 WK_W (피아노 섹션 높이 = 전체 높이의 45%~100% depending on layout)
+const PIANO_AVAIL_H  = IS_MOBILE
+    ? (vh - TOPBAR_H) * 0.44 - H_PADDING   // 모바일: 가용 높이의 ~44%
+    : vh - TOPBAR_H - H_PADDING;            // 데스크탑: 전체 콘텐츠 높이
+const WK_W_from_h    = Math.max(30, PIANO_AVAIL_H / 3.9);
+
+// 가로·세로 중 더 작은 값 사용 (화면 밖으로 안 나가게)
+const WK_W  = Math.min(WK_W_from_w, WK_W_from_h, 64);
+const WK_GAP = 3;
+const WK_H  = WK_W * 3.9;
+const BK_W  = WK_W * 0.62;
+const BK_H  = WK_H * 0.595;
 
 // Push to CSS
 const root = document.documentElement;
@@ -246,6 +268,12 @@ root.style.setProperty('--wk-gap', WK_GAP + 'px');
 root.style.setProperty('--wk-h',   WK_H   + 'px');
 root.style.setProperty('--bk-w',   BK_W   + 'px');
 root.style.setProperty('--bk-h',   BK_H   + 'px');
+
+// 모바일에서 피아노 섹션 높이를 JS로 고정 (스크롤 방지)
+if (IS_MOBILE) {
+    document.querySelector('.piano-section').style.height =
+        Math.round(WK_H + H_PADDING) + 'px';
+}
 
 function whiteLeft(i)       { return i * (WK_W + WK_GAP); }
 function blackLeft(wOffset) {

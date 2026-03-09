@@ -15,17 +15,27 @@
     /* Drum section */
     --drum-w: 272px;
     --cell-gap: 6px;
+
+    --topbar-h: 52px;
 }
 
 /* ── Base ─────────────────────────────────────────────────────────────────── */
 
+html {
+    height: 100%;
+    overflow: hidden;
+    touch-action: none; /* 페이지 자체 스크롤/줌 완전 차단 */
+}
+
 body {
     user-select: none;
     background: #080808;
-    min-height: 100vh;
+    height: 100%;
+    overflow: hidden;
+    touch-action: none;
     font-family: 'Helvetica Neue', 'Arial Black', Helvetica, Arial, sans-serif;
     -webkit-tap-highlight-color: transparent;
-    overflow: hidden;
+    overscroll-behavior: none;
 }
 
 /* ── App shell ────────────────────────────────────────────────────────────── */
@@ -34,19 +44,22 @@ body {
     display: flex;
     flex-direction: column;
     height: 100vh;
+    height: 100dvh; /* 모바일 브라우저 UI 제외한 실제 가시 영역 */
+    overflow: hidden;
 }
 
 /* ── Top bar ──────────────────────────────────────────────────────────────── */
 
 .top-bar {
     flex-shrink: 0;
-    height: 52px;
+    height: var(--topbar-h);
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 0 20px;
     border-bottom: 1px solid #161616;
     background: #080808;
+    overflow: hidden;
 }
 
 .brand {
@@ -74,6 +87,7 @@ body {
     display: flex;
     align-items: center;
     gap: 10px;
+    flex-shrink: 0;
 }
 
 .ctrl-label {
@@ -156,6 +170,7 @@ body {
 .content {
     display: flex;
     flex: 1;
+    min-height: 0; /* flex 자식이 수축할 수 있도록 */
     overflow: hidden;
 }
 
@@ -163,18 +178,20 @@ body {
 
 .piano-section {
     flex: 1;
+    min-width: 0;
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    padding: 20px 16px;
+    padding: 16px 14px;
 }
 
 .keyboard-scroll {
     overflow-x: auto;
     overflow-y: hidden;
+    touch-action: pan-x; /* 가로 스크롤만 허용 */
     max-width: 100%;
-    padding-bottom: 8px;
+    padding-bottom: 6px;
 }
 
 .keyboard-scroll::-webkit-scrollbar {
@@ -204,6 +221,7 @@ body {
     cursor: pointer;
     border-radius: 0 0 7px 7px;
     overflow: hidden;
+    touch-action: none; /* 건반 터치 시 스크롤 완전 차단 */
     transition: transform 0.08s ease;
 }
 
@@ -376,9 +394,12 @@ body {
     border-left: 1px solid #111;
     display: flex;
     flex-direction: column;
-    padding: 16px 14px 20px;
-    gap: 8px;
+    padding: 14px 12px 16px;
+    gap: 7px;
     overflow-y: auto;
+    overflow-x: hidden;
+    touch-action: pan-y; /* 드럼 섹션 세로 스크롤만 허용 */
+    overscroll-behavior: contain;
 }
 
 .drum-label {
@@ -449,6 +470,7 @@ body {
     border-radius: 5px;
     overflow: hidden;
     position: relative;
+    touch-action: none; /* 드래그 중 스크롤 차단 */
 }
 
 .drum-block::before {
@@ -558,36 +580,103 @@ body {
 
 /* ── Responsive ───────────────────────────────────────────────────────────── */
 
-@media (max-width: 767px) {
-    body { overflow-y: auto; }
+/* ── 태블릿 가로 / 중형 데스크탑 (768px – 1023px) ── */
+@media (min-width: 768px) and (max-width: 1023px) {
+    :root { --drum-w: 232px; }
 
+    .seq-controls { gap: 8px; }
+    .bpm-slider   { width: 68px; }
+}
+
+/* ── 모바일 세로 (< 768px) ── */
+@media (max-width: 767px) {
+    :root {
+        --topbar-h: 44px;
+        --drum-w: 100%;
+        --cell-gap: 5px;
+    }
+
+    /* 세로 스택: 피아노 위, 드럼 아래 */
     .content {
         flex-direction: column;
-        overflow: visible;
     }
 
     .piano-section {
-        padding: 16px 12px 8px;
+        flex: 0 0 auto;   /* JS가 높이를 결정 */
+        padding: 10px 10px 6px;
+        align-items: flex-start;
     }
 
     .drum-section {
+        flex: 1;
+        min-height: 0;
         width: 100%;
         border-left: none;
         border-top: 1px solid #111;
+        /* 가로 두 칸: [beat grid] [palette] */
         flex-direction: row;
-        flex-wrap: wrap;
-        gap: 12px;
-        padding: 16px 12px 24px;
+        flex-wrap: nowrap;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 10px 10px 12px;
+        overflow-y: hidden;
+        overflow-x: hidden;
     }
 
-    .drum-label {
-        width: 100%;
-        margin-top: 0 !important;
+    /* 라벨을 각 그리드 위에 표시 */
+    .drum-section > .drum-label {
+        display: none; /* 가로 배치에서는 라벨 제거 */
     }
 
     .beat-grid,
     .drum-palette {
         flex: 1;
-        min-width: 180px;
+        min-width: 0;
     }
+
+    /* 탑바 컨트롤 축소 */
+    .brand-sub     { display: none; }
+    .ctrl-divider  { display: none; }
+    .ctrl-label    { display: none; }
+    .bpm-slider    { width: 60px; }
+    .bpm-val       { width: 22px; font-size: 0.72rem; }
+    .seq-controls  { gap: 6px; }
+}
+
+/* ── 소형 모바일 (< 480px) ── */
+@media (max-width: 479px) {
+    .bpm-slider { width: 50px; }
+    .brand-title { font-size: 0.8rem; }
+}
+
+/* ── 모바일 가로 (landscape, 짧은 화면) ── */
+@media (max-width: 900px) and (orientation: landscape) and (max-height: 500px) {
+    :root {
+        --topbar-h: 38px;
+        --drum-w: 220px;
+        --cell-gap: 4px;
+    }
+
+    /* 데스크탑 스타일 유지 (가로 배치) */
+    .content { flex-direction: row; }
+
+    .piano-section {
+        flex: 1;
+        padding: 8px 10px;
+    }
+
+    .drum-section {
+        width: var(--drum-w);
+        border-left: 1px solid #111;
+        border-top: none;
+        flex-direction: column;
+        padding: 8px 10px;
+        overflow-y: auto;
+    }
+
+    .drum-section > .drum-label { display: block; }
+
+    .brand-sub, .ctrl-divider, .ctrl-label { display: none; }
+    .bpm-slider { width: 56px; }
+    .seq-controls { gap: 6px; }
 }
