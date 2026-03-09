@@ -371,7 +371,6 @@ function makeDrumBlock(drumId, forPalette = false) {
     el.innerHTML = `
         <div class="block-inner">
             <span class="block-label">${drum.label}</span>
-            <span class="block-sub">${drum.sub}</span>
         </div>`;
 
     if (forPalette) {

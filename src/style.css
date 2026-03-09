@@ -24,7 +24,8 @@
 html {
     height: 100%;
     overflow: hidden;
-    touch-action: none; /* 페이지 자체 스크롤/줌 완전 차단 */
+    touch-action: none;
+    /* 페이지 자체 스크롤/줌 완전 차단 */
 }
 
 body {
@@ -44,7 +45,8 @@ body {
     display: flex;
     flex-direction: column;
     height: 100vh;
-    height: 100dvh; /* 모바일 브라우저 UI 제외한 실제 가시 영역 */
+    height: 100dvh;
+    /* 모바일 브라우저 UI 제외한 실제 가시 영역 */
     overflow: hidden;
 }
 
@@ -71,14 +73,14 @@ body {
 .brand-title {
     font-weight: 900;
     font-size: 0.95rem;
-    color: #3a3a3a;
+    color: #cacaca;
     letter-spacing: 0.04em;
 }
 
 .brand-sub {
     font-weight: 400;
     font-size: 0.62rem;
-    color: #202020;
+    color: #cacaca;
     letter-spacing: 0.1em;
     text-transform: uppercase;
 }
@@ -93,7 +95,7 @@ body {
 .ctrl-label {
     font-weight: 700;
     font-size: 0.62rem;
-    color: #333;
+    color: #cacaca;
     letter-spacing: 0.08em;
 }
 
@@ -113,13 +115,13 @@ body {
     width: 12px;
     height: 12px;
     border-radius: 50%;
-    background: #3a3a3a;
+    background: #cacaca;
     cursor: pointer;
     transition: background 0.15s;
 }
 
 .bpm-slider::-webkit-slider-thumb:hover {
-    background: #666;
+    background: #8ab4cc;
 }
 
 .ctrl-divider {
@@ -132,7 +134,7 @@ body {
 .bpm-val {
     font-weight: 900;
     font-size: 0.8rem;
-    color: #444;
+    color: #cacaca;
     width: 28px;
     text-align: right;
     letter-spacing: -0.02em;
@@ -142,7 +144,7 @@ body {
     background: #151515;
     border: 1.5px solid #252525;
     border-radius: 6px;
-    color: #555;
+    color: #cacaca;
     font-size: 0.75rem;
     width: 34px;
     height: 34px;
@@ -156,13 +158,13 @@ body {
 .play-btn:hover {
     background: #1e1e1e;
     border-color: #333;
-    color: #888;
+    color: #cacaca;
 }
 
 .play-btn.active {
-    background: #1a2a1a;
-    border-color: #2a5a2a;
-    color: #44cc44;
+    background: #182028;
+    border-color: #2a4a5a;
+    color: #8ab4cc;
 }
 
 /* ── Content area ─────────────────────────────────────────────────────────── */
@@ -170,7 +172,8 @@ body {
 .content {
     display: flex;
     flex: 1;
-    min-height: 0; /* flex 자식이 수축할 수 있도록 */
+    min-height: 0;
+    /* flex 자식이 수축할 수 있도록 */
     overflow: hidden;
 }
 
@@ -189,7 +192,8 @@ body {
 .keyboard-scroll {
     overflow-x: auto;
     overflow-y: hidden;
-    touch-action: pan-x; /* 가로 스크롤만 허용 */
+    touch-action: pan-x;
+    /* 가로 스크롤만 허용 */
     max-width: 100%;
     padding-bottom: 6px;
 }
@@ -197,7 +201,11 @@ body {
 .keyboard-scroll::-webkit-scrollbar {
     height: 3px;
 }
-.keyboard-scroll::-webkit-scrollbar-track { background: transparent; }
+
+.keyboard-scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+
 .keyboard-scroll::-webkit-scrollbar-thumb {
     background: #1e1e1e;
     border-radius: 2px;
@@ -221,7 +229,8 @@ body {
     cursor: pointer;
     border-radius: 0 0 7px 7px;
     overflow: hidden;
-    touch-action: none; /* 건반 터치 시 스크롤 완전 차단 */
+    touch-action: none;
+    /* 건반 터치 시 스크롤 완전 차단 */
     transition: transform 0.08s ease;
 }
 
@@ -240,7 +249,9 @@ body {
     transform-origin: top center;
 }
 
-.key.active::before { opacity: 0.78; }
+.key.active::before {
+    opacity: 0.78;
+}
 
 .key.release::before {
     opacity: 0;
@@ -259,7 +270,7 @@ body {
 .white-key.active {
     border-color: var(--key-color);
     box-shadow: 0 0 18px color-mix(in srgb, var(--key-color) 55%, transparent),
-                0 0 44px color-mix(in srgb, var(--key-color) 25%, transparent);
+        0 0 44px color-mix(in srgb, var(--key-color) 25%, transparent);
 }
 
 .white-key.release {
@@ -280,7 +291,7 @@ body {
 .black-key.active {
     border-color: var(--key-color);
     box-shadow: 0 0 12px color-mix(in srgb, var(--key-color) 65%, transparent),
-                0 0 28px color-mix(in srgb, var(--key-color) 30%, transparent);
+        0 0 28px color-mix(in srgb, var(--key-color) 30%, transparent);
 }
 
 .black-key.release {
@@ -307,8 +318,8 @@ body {
 }
 
 .key.active .key-inner {
-    background: rgba(0,0,0,0.35);
-    border-color: rgba(255,255,255,0.2);
+    background: rgba(0, 0, 0, 0.35);
+    border-color: rgba(255, 255, 255, 0.2);
 }
 
 .key-label {
@@ -320,7 +331,9 @@ body {
     transition: color 0.07s;
 }
 
-.key.active .key-label { color: #fff; }
+.key.active .key-label {
+    color: #fff;
+}
 
 .key-note {
     font-weight: 700;
@@ -330,7 +343,9 @@ body {
     transition: color 0.07s;
 }
 
-.key.active .key-note { color: rgba(255,255,255,0.5); }
+.key.active .key-note {
+    color: rgba(255, 255, 255, 0.5);
+}
 
 .key-freq {
     font-weight: 400;
@@ -339,7 +354,9 @@ body {
     transition: color 0.07s;
 }
 
-.key.active .key-freq { color: rgba(255,255,255,0.35); }
+.key.active .key-freq {
+    color: rgba(255, 255, 255, 0.35);
+}
 
 .bk-inner {
     padding: 4px 2px 3px;
@@ -357,7 +374,9 @@ body {
     transition: color 0.07s;
 }
 
-.key.active .bk-sub { color: rgba(255,255,255,0.4); }
+.key.active .bk-sub {
+    color: rgba(255, 255, 255, 0.4);
+}
 
 /* Octave divider */
 .octave-divider {
@@ -375,7 +394,7 @@ body {
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: rgba(255,255,255,0.3);
+    background: rgba(255, 255, 255, 0.3);
     transform: scale(0);
     animation: ripple-out 0.4s ease-out forwards;
     pointer-events: none;
@@ -383,7 +402,10 @@ body {
 }
 
 @keyframes ripple-out {
-    to { transform: scale(16); opacity: 0; }
+    to {
+        transform: scale(16);
+        opacity: 0;
+    }
 }
 
 /* ── Drum section ─────────────────────────────────────────────────────────── */
@@ -398,7 +420,8 @@ body {
     gap: 7px;
     overflow-y: auto;
     overflow-x: hidden;
-    touch-action: pan-y; /* 드럼 섹션 세로 스크롤만 허용 */
+    touch-action: pan-y;
+    /* 드럼 섹션 세로 스크롤만 허용 */
     overscroll-behavior: contain;
 }
 
@@ -441,7 +464,9 @@ body {
     transition: color 0.12s;
 }
 
-.beat-cell.has-block::after { display: none; }
+.beat-cell.has-block::after {
+    display: none;
+}
 
 .beat-cell.drop-hover {
     border-color: #333;
@@ -470,7 +495,8 @@ body {
     border-radius: 5px;
     overflow: hidden;
     position: relative;
-    touch-action: none; /* 드래그 중 스크롤 차단 */
+    touch-action: none;
+    /* 드래그 중 스크롤 차단 */
 }
 
 .drum-block::before {
@@ -489,8 +515,13 @@ body {
 }
 
 @keyframes hit-fade {
-    0%   { opacity: 0.6; }
-    100% { opacity: 0; }
+    0% {
+        opacity: 0.6;
+    }
+
+    100% {
+        opacity: 0;
+    }
 }
 
 .block-inner {
@@ -501,11 +532,12 @@ body {
     border-radius: 5px;
     width: calc(100% - 10px);
     height: calc(100% - 10px);
+    min-height: 44px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 3px;
+    overflow: hidden;
     transition: border-color 0.08s, background 0.08s;
 }
 
@@ -535,12 +567,18 @@ body {
     line-height: 1;
 }
 
-.drum-block.drum-hit .block-label { color: #fff; }
-.drum-block.drum-hit .block-sub   { color: rgba(255,255,255,0.5); }
+.drum-block.drum-hit .block-label {
+    color: #fff;
+}
+
+.drum-block.drum-hit .block-sub {
+    color: rgba(255, 255, 255, 0.5);
+}
 
 /* Palette blocks – slightly different treatment */
 .drum-palette .drum-block {
     cursor: grab;
+    aspect-ratio: 1;
 }
 
 .drum-palette .drum-block:active {
@@ -555,8 +593,8 @@ body {
     z-index: 9999;
     opacity: 0.88;
     border-radius: 7px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.6),
-                0 0 20px color-mix(in srgb, var(--drum-color, #fff) 30%, transparent);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6),
+        0 0 20px color-mix(in srgb, var(--drum-color, #fff) 30%, transparent);
 }
 
 .drag-clone .block-inner {
@@ -582,10 +620,17 @@ body {
 
 /* ── 태블릿 가로 / 중형 데스크탑 (768px – 1023px) ── */
 @media (min-width: 768px) and (max-width: 1023px) {
-    :root { --drum-w: 232px; }
+    :root {
+        --drum-w: 232px;
+    }
 
-    .seq-controls { gap: 8px; }
-    .bpm-slider   { width: 68px; }
+    .seq-controls {
+        gap: 8px;
+    }
+
+    .bpm-slider {
+        width: 68px;
+    }
 }
 
 /* ── 모바일 세로 (< 768px) ── */
@@ -602,7 +647,8 @@ body {
     }
 
     .piano-section {
-        flex: 0 0 auto;   /* JS가 높이를 결정 */
+        flex: 0 0 auto;
+        /* JS가 높이를 결정 */
         padding: 10px 10px 6px;
         align-items: flex-start;
     }
@@ -624,8 +670,9 @@ body {
     }
 
     /* 라벨을 각 그리드 위에 표시 */
-    .drum-section > .drum-label {
-        display: none; /* 가로 배치에서는 라벨 제거 */
+    .drum-section>.drum-label {
+        display: none;
+        /* 가로 배치에서는 라벨 제거 */
     }
 
     .beat-grid,
@@ -635,18 +682,41 @@ body {
     }
 
     /* 탑바 컨트롤 축소 */
-    .brand-sub     { display: none; }
-    .ctrl-divider  { display: none; }
-    .ctrl-label    { display: none; }
-    .bpm-slider    { width: 60px; }
-    .bpm-val       { width: 22px; font-size: 0.72rem; }
-    .seq-controls  { gap: 6px; }
+    .brand-sub {
+        display: none;
+    }
+
+    .ctrl-divider {
+        display: none;
+    }
+
+    .ctrl-label {
+        display: none;
+    }
+
+    .bpm-slider {
+        width: 60px;
+    }
+
+    .bpm-val {
+        width: 22px;
+        font-size: 0.72rem;
+    }
+
+    .seq-controls {
+        gap: 6px;
+    }
 }
 
 /* ── 소형 모바일 (< 480px) ── */
 @media (max-width: 479px) {
-    .bpm-slider { width: 50px; }
-    .brand-title { font-size: 0.8rem; }
+    .bpm-slider {
+        width: 50px;
+    }
+
+    .brand-title {
+        font-size: 0.8rem;
+    }
 }
 
 /* ── 모바일 가로 (landscape, 짧은 화면) ── */
@@ -658,7 +728,9 @@ body {
     }
 
     /* 데스크탑 스타일 유지 (가로 배치) */
-    .content { flex-direction: row; }
+    .content {
+        flex-direction: row;
+    }
 
     .piano-section {
         flex: 1;
@@ -674,9 +746,21 @@ body {
         overflow-y: auto;
     }
 
-    .drum-section > .drum-label { display: block; }
+    .drum-section>.drum-label {
+        display: block;
+    }
 
-    .brand-sub, .ctrl-divider, .ctrl-label { display: none; }
-    .bpm-slider { width: 56px; }
-    .seq-controls { gap: 6px; }
+    .brand-sub,
+    .ctrl-divider,
+    .ctrl-label {
+        display: none;
+    }
+
+    .bpm-slider {
+        width: 56px;
+    }
+
+    .seq-controls {
+        gap: 6px;
+    }
 }
