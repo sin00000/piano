@@ -1,5 +1,8 @@
-// 페이지 스크롤 완전 차단 (keyboard-scroll, drum-section은 CSS touch-action으로 허용)
-document.addEventListener('touchmove', e => e.preventDefault(), { passive: false });
+// 페이지 스크롤 차단 (단, 가로 스크롤이 필요한 영역은 제외)
+document.addEventListener('touchmove', e => {
+    if (e.target.closest('.keyboard-scroll, .guitar-chords, .drum-section')) return;
+    e.preventDefault();
+}, { passive: false });
 
 // ══════════════════════════════════════════════════════════════════════════
 // DATA

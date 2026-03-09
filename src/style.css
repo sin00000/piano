@@ -25,8 +25,7 @@
 html {
     height: 100%;
     overflow: hidden;
-    touch-action: none;
-    /* 페이지 자체 스크롤/줌 완전 차단 */
+    overscroll-behavior: none;
 }
 
 body {
@@ -34,7 +33,6 @@ body {
     background: white;
     height: 100%;
     overflow: hidden;
-    touch-action: none;
     font-family: 'Helvetica Neue', 'Arial Black', Helvetica, Arial, sans-serif;
     -webkit-tap-highlight-color: transparent;
     overscroll-behavior: none;
@@ -230,8 +228,8 @@ body {
     cursor: pointer;
     border-radius: 0 0 7px 7px;
     overflow: hidden;
-    touch-action: none;
-    /* 건반 터치 시 스크롤 완전 차단 */
+    touch-action: pan-x;
+    /* 가로 스크롤 허용, 세로/줌 차단 */
     transition: transform 0.08s ease;
 }
 
@@ -827,7 +825,7 @@ body {
     justify-content: center;
     gap: 5px;
     padding: 0 4px;
-    touch-action: none;
+    touch-action: pan-x;
     transition: border-color 0.08s, background 0.08s;
     user-select: none;
     -webkit-user-select: none;
