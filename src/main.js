@@ -243,6 +243,7 @@ const TOPBAR_H       = IS_LANDSCAPE_S ? 38 : IS_MOBILE ? 44 : 52;
 const DRUM_W         = IS_MOBILE ? 0 : (IS_LANDSCAPE_S ? 220 : vw < 1024 ? 232 : 272);
 const H_PADDING      = IS_MOBILE ? 16 : 32;         // piano-section 상하 패딩
 const W_PADDING      = IS_MOBILE ? 20 : 28;         // 좌우 패딩
+const GUITAR_H       = IS_LANDSCAPE_S ? 60 : IS_MOBILE ? 72 : 96; // 기타 섹션 높이
 
 // 가로 기반 WK_W
 const PIANO_AVAIL_W  = vw - DRUM_W - W_PADDING;
@@ -250,8 +251,8 @@ const WK_W_from_w    = Math.min(64, Math.max(38, PIANO_AVAIL_W / 14));
 
 // 세로 기반 WK_W (피아노 섹션 높이 = 전체 높이의 45%~100% depending on layout)
 const PIANO_AVAIL_H  = IS_MOBILE
-    ? (vh - TOPBAR_H) * 0.44 - H_PADDING   // 모바일: 가용 높이의 ~44%
-    : vh - TOPBAR_H - H_PADDING;            // 데스크탑: 전체 콘텐츠 높이
+    ? (vh - TOPBAR_H - GUITAR_H) * 0.44 - H_PADDING
+    : vh - TOPBAR_H - H_PADDING - GUITAR_H;
 const WK_W_from_h    = Math.max(30, PIANO_AVAIL_H / 3.9);
 
 // 가로·세로 중 더 작은 값 사용 (화면 밖으로 안 나가게)
@@ -687,3 +688,97 @@ syncSlider.addEventListener('input', () => {
     syncLevel = parseInt(syncSlider.value) / 100;
 });
 syncSlider.addEventListener('change', () => syncSlider.blur());
+
+// ══════════════════════════════════════════════════════════════════════════
+// GUITAR
+// ══════════════════════════════════════════════════════════════════════════
+
+const GUITAR_CHORDS = [
+    { name: 'E',  color: '#ff3050', freqs: [82.41, 123.47, 164.81, 207.65, 246.94, 329.63] },
+    { name: 'A',  color: '#ff7030', freqs: [110.00, 164.81, 220.00, 277.18, 329.63]        },
+    { name: 'D',  color: '#ffd030', freqs: [146.83, 220.00, 293.66, 369.99]                },
+    { name: 'G',  color: '#30dd55', freqs: [98.00, 123.47, 146.83, 196.00, 246.94, 392.00] },
+    { name: 'C',  color: '#30aaff', freqs: [130.81, 164.81, 196.00, 261.63, 329.63]        },
+    { name: 'Em', color: '#4455ff', freqs: [82.41, 123.47, 164.81, 196.00, 246.94, 329.63] },
+    { name: 'Am', color: '#9933ff', freqs: [110.00, 164.81, 220.00, 261.63, 329.63]        },
+    { name: 'Dm', color: '#ff33aa', freqs: [146.83, 220.00, 293.66, 349.23]                },
+    { name: 'F',  color: '#77ff33', freqs: [87.31, 130.81, 174.61, 220.00, 261.63, 349.23] },
+    { name: 'Bm', color: '#33ffdd', freqs: [123.47, 185.00, 246.94, 293.66, 369.99]        },
+];
+
+// 디스토션 커브 (1회 생성)
+const GUITAR_DIST_CURVE = (() => {
+    const n = 256, amount = 160;
+    const curve = new Float32Array(n);
+    for (let i = 0; i < n; i++) {
+        const x = (i * 2 / n) - 1;
+        curve[i] = (Math.PI + amount) * x / (Math.PI + amount * Math.abs(x));
+    }
+    return curve;
+})();
+
+function playGuitarString(freq) {
+    const ctx = getAudioCtx();
+    const now = ctx.currentTime;
+
+    const osc1 = ctx.createOscillator(), osc2 = ctx.createOscillator();
+    osc1.type = 'sawtooth'; osc2.type = 'square';
+    osc1.frequency.value = freq;
+    osc2.frequency.value = freq * 1.003;  // 미세 디튠 (코러스 효과)
+
+    const g1 = ctx.createGain(), g2 = ctx.createGain();
+    g1.gain.value = 0.55; g2.gain.value = 0.2;
+
+    const env = ctx.createGain();
+    env.gain.setValueAtTime(0, now);
+    env.gain.linearRampToValueAtTime(0.75, now + 0.004);
+    env.gain.exponentialRampToValueAtTime(0.25, now + 0.08);
+    env.gain.exponentialRampToValueAtTime(0.001, now + 1.1);
+
+    const dist = ctx.createWaveShaper();
+    dist.curve = GUITAR_DIST_CURVE;
+
+    const tone = ctx.createBiquadFilter();
+    tone.type = 'lowpass'; tone.frequency.value = 3800; tone.Q.value = 0.5;
+
+    const out = ctx.createGain();
+    out.gain.value = 0.28;
+
+    osc1.connect(g1); osc2.connect(g2);
+    g1.connect(env); g2.connect(env);
+    env.connect(dist); dist.connect(tone); tone.connect(out); out.connect(ctx.destination);
+
+    osc1.start(now); osc2.start(now);
+    osc1.stop(now + 1.1); osc2.stop(now + 1.1);
+}
+
+function strumChord(freqs) {
+    freqs.forEach((freq, i) => setTimeout(() => playGuitarString(freq), i * 28));
+}
+
+// ── Guitar UI ──────────────────────────────────────────────────────────────
+const guitarChordsEl = document.getElementById('guitarChords');
+
+GUITAR_CHORDS.forEach(chord => {
+    const btn = document.createElement('div');
+    btn.className = 'chord-btn';
+    btn.style.setProperty('--chord-color', chord.color);
+    btn.innerHTML = `
+        <span class="chord-name">${chord.name}</span>
+        <div class="chord-strings">
+            <span class="c-str"></span><span class="c-str"></span>
+            <span class="c-str"></span><span class="c-str"></span>
+            <span class="c-str"></span><span class="c-str"></span>
+        </div>`;
+
+    function strum() {
+        strumChord(chord.freqs);
+        btn.classList.remove('strumming');
+        void btn.offsetWidth;
+        btn.classList.add('strumming');
+    }
+    btn.addEventListener('mousedown',  e => { e.preventDefault(); strum(); });
+    btn.addEventListener('touchstart', e => { e.preventDefault(); strum(); }, { passive: false });
+
+    guitarChordsEl.appendChild(btn);
+});

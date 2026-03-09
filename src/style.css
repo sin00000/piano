@@ -17,6 +17,7 @@
     --cell-gap: 6px;
 
     --topbar-h: 52px;
+    --guitar-h: 96px;
 }
 
 /* ── Base ─────────────────────────────────────────────────────────────────── */
@@ -657,6 +658,7 @@ body {
         --topbar-h: 44px;
         --drum-w: 100%;
         --cell-gap: 5px;
+        --guitar-h: 72px;
     }
 
     /* 세로 스택: 피아노 위, 드럼 아래 */
@@ -768,6 +770,8 @@ body {
         display: block;
     }
 
+    :root { --guitar-h: 60px; }
+
     .brand-sub,
     .ctrl-divider,
     .ctrl-label {
@@ -782,3 +786,103 @@ body {
         gap: 6px;
     }
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   GUITAR SECTION
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.guitar-section {
+    flex-shrink: 0;
+    height: var(--guitar-h);
+    border-top: 1px solid #111;
+    background: #060606;
+    padding: 8px 12px;
+    display: flex;
+    align-items: stretch;
+}
+
+.guitar-chords {
+    display: flex;
+    gap: 5px;
+    flex: 1;
+    overflow-x: auto;
+    overflow-y: hidden;
+    touch-action: pan-x;
+    scrollbar-width: none;
+}
+.guitar-chords::-webkit-scrollbar { display: none; }
+
+.chord-btn {
+    flex: 1;
+    min-width: 52px;
+    background: #0e0e0e;
+    border: 1.5px solid #1e1e1e;
+    border-radius: 7px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 0 4px;
+    touch-action: none;
+    transition: border-color 0.08s, background 0.08s;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.chord-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--chord-color);
+    opacity: 0;
+    border-radius: inherit;
+    transition: opacity 0.08s;
+}
+
+.chord-btn:hover { border-color: #2a2a2a; background: #131313; }
+.chord-btn:active::before { opacity: 0.12; }
+
+.chord-name {
+    font-weight: 900;
+    font-size: clamp(0.6rem, 1.2vw, 0.82rem);
+    color: #cacaca;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    position: relative;
+    z-index: 1;
+    transition: color 0.08s;
+}
+
+.chord-btn.strumming .chord-name { color: #fff; }
+
+.chord-strings {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5px;
+    width: calc(100% - 10px);
+    position: relative;
+    z-index: 1;
+}
+
+.c-str {
+    height: 1.5px;
+    background: #252525;
+    border-radius: 1px;
+}
+
+/* 스트럼 애니메이션 – 줄별 순차 점등 */
+@keyframes strum-flash {
+    0%   { background: var(--chord-color); }
+    100% { background: #252525; }
+}
+
+.chord-btn.strumming .c-str:nth-child(1) { animation: strum-flash 0.5s   0ms ease-out forwards; }
+.chord-btn.strumming .c-str:nth-child(2) { animation: strum-flash 0.5s  30ms ease-out forwards; }
+.chord-btn.strumming .c-str:nth-child(3) { animation: strum-flash 0.5s  60ms ease-out forwards; }
+.chord-btn.strumming .c-str:nth-child(4) { animation: strum-flash 0.5s  90ms ease-out forwards; }
+.chord-btn.strumming .c-str:nth-child(5) { animation: strum-flash 0.5s 120ms ease-out forwards; }
+.chord-btn.strumming .c-str:nth-child(6) { animation: strum-flash 0.5s 150ms ease-out forwards; }
