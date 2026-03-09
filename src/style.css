@@ -29,7 +29,7 @@ html {
 
 body {
     user-select: none;
-    background: #080808;
+    background: white;
     height: 100%;
     overflow: hidden;
     touch-action: none;
@@ -364,7 +364,7 @@ body {
     position: absolute;
     top: 0;
     width: 2px;
-    background: #161616;
+    background: white;
     z-index: 2;
     pointer-events: none;
 }
