@@ -377,7 +377,9 @@ BLACK_NOTES.forEach((n, i) => {
 const pressedCodes = new Set();
 
 document.addEventListener('keydown', e => {
-    if (e.repeat || e.target.tagName === 'INPUT') return;
+    if (e.repeat) return;
+    // range 슬라이더는 포커스되어도 피아노 키 허용, 텍스트 입력만 차단
+    if (e.target.tagName === 'INPUT' && e.target.type !== 'range') return;
     const entry = codeMap[e.code];
     if (!entry || pressedCodes.has(e.code)) return;
     pressedCodes.add(e.code);
@@ -674,11 +676,14 @@ bpmSlider.addEventListener('input', () => {
     bpm = parseInt(bpmSlider.value);
     bpmDisplay.textContent = bpm;
 });
+bpmSlider.addEventListener('change', () => bpmSlider.blur());
 
 swingSlider.addEventListener('input', () => {
     swing = parseInt(swingSlider.value) / 100;
 });
+swingSlider.addEventListener('change', () => swingSlider.blur());
 
 syncSlider.addEventListener('input', () => {
     syncLevel = parseInt(syncSlider.value) / 100;
 });
+syncSlider.addEventListener('change', () => syncSlider.blur());
