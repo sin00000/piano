@@ -64,6 +64,13 @@ function getAudioCtx() {
     return audioCtx;
 }
 
+// Safari는 resume()이 비동기 → 컨텍스트가 running 상태가 될 때까지 기다린 후 콜백 실행
+function withAudio(fn) {
+    const ctx = getAudioCtx();
+    if (ctx.state === 'running') { fn(ctx); return; }
+    ctx.resume().then(() => fn(ctx)).catch(() => fn(ctx));
+}
+
 // 모든 오디오가 거치는 마스터 출력 노드 (녹음 시 분기점으로 사용)
 function getMasterOut() {
     const ctx = getAudioCtx();
@@ -301,7 +308,7 @@ function addPianoEvents(el, freq) {
         e.preventDefault();
         el.classList.remove('release');
         el.classList.add('active');
-        playPianoNote(freq);
+        withAudio(() => playPianoNote(freq));
 
         const rect = el.getBoundingClientRect();
         const cx = e.touches ? e.touches[0].clientX : e.clientX;
@@ -402,7 +409,7 @@ document.addEventListener('keydown', e => {
     const { freq, el } = entry;
     el.classList.remove('release');
     el.classList.add('active');
-    playPianoNote(freq);
+    withAudio(() => playPianoNote(freq));
 });
 
 document.addEventListener('keyup', e => {
@@ -438,7 +445,7 @@ function makeDrumBlock(drumId, forPalette = false) {
     if (forPalette) {
         // Palette: click to preview sound; drag to place
         el.addEventListener('click', () => {
-            playDrum(drumId, getAudioCtx().currentTime, getAudioCtx());
+            withAudio(ctx => playDrum(drumId, ctx.currentTime, ctx));
         });
     }
     return el;
@@ -660,10 +667,11 @@ function scheduler() {
 }
 
 function startSeq() {
-    const ctx = getAudioCtx();
-    currentStep  = 0;
-    nextStepTime = ctx.currentTime + 0.05;
-    scheduler();
+    withAudio(ctx => {
+        currentStep  = 0;
+        nextStepTime = ctx.currentTime + 0.05;
+        scheduler();
+    });
 }
 
 function stopSeq() {
@@ -786,7 +794,7 @@ GUITAR_CHORDS.forEach(chord => {
         </div>`;
 
     function strum() {
-        strumChord(chord.freqs);
+        withAudio(() => strumChord(chord.freqs));
         btn.classList.remove('strumming');
         void btn.offsetWidth;
         btn.classList.add('strumming');
@@ -811,6 +819,7 @@ function getSupportedMimeType() {
         'audio/webm;codecs=opus',
         'audio/webm',
         'audio/ogg;codecs=opus',
+        'audio/mp4;codecs=mp4a.40.2',
         'audio/mp4',
     ];
     return types.find(t => MediaRecorder.isTypeSupported(t)) || '';
