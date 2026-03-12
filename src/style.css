@@ -166,6 +166,18 @@ body {
     color: #8ab4cc;
 }
 
+.rec-btn.recording {
+    background: #1e0808;
+    border-color: #5a1515;
+    color: #ff4040;
+    animation: rec-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes rec-pulse {
+    0%, 100% { color: #ff4040; }
+    50%       { color: #ff8080; }
+}
+
 /* ── Content area ─────────────────────────────────────────────────────────── */
 
 .content {

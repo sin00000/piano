@@ -55,12 +55,23 @@ const DRUMS = [
 // AUDIO
 // ══════════════════════════════════════════════════════════════════════════
 
-let audioCtx = null;
+let audioCtx  = null;
+let masterGain = null;
 
 function getAudioCtx() {
     if (!audioCtx) audioCtx = new (window.AudioContext || window['webkitAudioContext'])();
     if (audioCtx.state === 'suspended') audioCtx.resume();
     return audioCtx;
+}
+
+// 모든 오디오가 거치는 마스터 출력 노드 (녹음 시 분기점으로 사용)
+function getMasterOut() {
+    const ctx = getAudioCtx();
+    if (!masterGain) {
+        masterGain = ctx.createGain();
+        masterGain.connect(ctx.destination);
+    }
+    return masterGain;
 }
 
 // ── Piano tone ─────────────────────────────────────────────────────────────
@@ -70,7 +81,7 @@ function playPianoNote(freq) {
     const now = ctx.currentTime;
 
     const osc1 = ctx.createOscillator(), g1 = ctx.createGain();
-    osc1.connect(g1); g1.connect(ctx.destination);
+    osc1.connect(g1); g1.connect(getMasterOut());
     osc1.type = 'triangle';
     osc1.frequency.setValueAtTime(freq, now);
     g1.gain.setValueAtTime(0.38, now);
@@ -78,7 +89,7 @@ function playPianoNote(freq) {
     osc1.start(now); osc1.stop(now + 1.5);
 
     const osc2 = ctx.createOscillator(), g2 = ctx.createGain();
-    osc2.connect(g2); g2.connect(ctx.destination);
+    osc2.connect(g2); g2.connect(getMasterOut());
     osc2.type = 'sine';
     osc2.frequency.setValueAtTime(freq * 2, now);
     g2.gain.setValueAtTime(0.1, now);
@@ -86,7 +97,7 @@ function playPianoNote(freq) {
     osc2.start(now); osc2.stop(now + 0.6);
 
     const osc3 = ctx.createOscillator(), g3 = ctx.createGain();
-    osc3.connect(g3); g3.connect(ctx.destination);
+    osc3.connect(g3); g3.connect(getMasterOut());
     osc3.type = 'sine';
     osc3.frequency.setValueAtTime(freq, now);
     g3.gain.setValueAtTime(0.16, now);
@@ -108,7 +119,7 @@ function noiseBuffer(ctx, dur) {
 
 function playKick(ctx, t) {
     const osc = ctx.createOscillator(), g = ctx.createGain();
-    osc.connect(g); g.connect(ctx.destination);
+    osc.connect(g); g.connect(getMasterOut());
     osc.type = 'sine';
     osc.frequency.setValueAtTime(180, t);
     osc.frequency.exponentialRampToValueAtTime(0.001, t + 0.45);
@@ -117,7 +128,7 @@ function playKick(ctx, t) {
     osc.start(t); osc.stop(t + 0.45);
 
     const click = ctx.createOscillator(), cg = ctx.createGain();
-    click.connect(cg); cg.connect(ctx.destination);
+    click.connect(cg); cg.connect(getMasterOut());
     click.frequency.setValueAtTime(900, t);
     cg.gain.setValueAtTime(0.5, t);
     cg.gain.exponentialRampToValueAtTime(0.001, t + 0.014);
@@ -128,13 +139,13 @@ function playSnare(ctx, t) {
     const noise = noiseBuffer(ctx, 0.25);
     const filter = ctx.createBiquadFilter(), ng = ctx.createGain();
     filter.type = 'bandpass'; filter.frequency.value = 3000; filter.Q.value = 0.6;
-    noise.connect(filter); filter.connect(ng); ng.connect(ctx.destination);
+    noise.connect(filter); filter.connect(ng); ng.connect(getMasterOut());
     ng.gain.setValueAtTime(0.7, t);
     ng.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
     noise.start(t);
 
     const osc = ctx.createOscillator(), og = ctx.createGain();
-    osc.connect(og); og.connect(ctx.destination);
+    osc.connect(og); og.connect(getMasterOut());
     osc.type = 'triangle'; osc.frequency.setValueAtTime(220, t);
     og.gain.setValueAtTime(0.4, t);
     og.gain.exponentialRampToValueAtTime(0.001, t + 0.1);
@@ -146,7 +157,7 @@ function playHihat(ctx, t, open = false) {
     const noise = noiseBuffer(ctx, dur);
     const filter = ctx.createBiquadFilter(), g = ctx.createGain();
     filter.type = 'highpass'; filter.frequency.value = 8000;
-    noise.connect(filter); filter.connect(g); g.connect(ctx.destination);
+    noise.connect(filter); filter.connect(g); g.connect(getMasterOut());
     g.gain.setValueAtTime(0.45, t);
     g.gain.exponentialRampToValueAtTime(0.001, t + dur);
     noise.start(t);
@@ -158,7 +169,7 @@ function playClap(ctx, t) {
         const noise = noiseBuffer(ctx, 0.07);
         const filter = ctx.createBiquadFilter(), g = ctx.createGain();
         filter.type = 'bandpass'; filter.frequency.value = 2500;
-        noise.connect(filter); filter.connect(g); g.connect(ctx.destination);
+        noise.connect(filter); filter.connect(g); g.connect(getMasterOut());
         g.gain.setValueAtTime(0.65, ti);
         g.gain.exponentialRampToValueAtTime(0.001, ti + 0.07);
         noise.start(ti);
@@ -167,7 +178,7 @@ function playClap(ctx, t) {
 
 function playTom(ctx, t) {
     const osc = ctx.createOscillator(), g = ctx.createGain();
-    osc.connect(g); g.connect(ctx.destination);
+    osc.connect(g); g.connect(getMasterOut());
     osc.type = 'sine';
     osc.frequency.setValueAtTime(120, t);
     osc.frequency.exponentialRampToValueAtTime(55, t + 0.3);
@@ -179,7 +190,7 @@ function playTom(ctx, t) {
 function playRide(ctx, t) {
     [820, 1240, 1680, 2200].forEach(f => {
         const osc = ctx.createOscillator(), g = ctx.createGain();
-        osc.connect(g); g.connect(ctx.destination);
+        osc.connect(g); g.connect(getMasterOut());
         osc.type = 'sine'; osc.frequency.setValueAtTime(f, t);
         g.gain.setValueAtTime(0.09, t);
         g.gain.exponentialRampToValueAtTime(0.001, t + 0.6);
@@ -191,7 +202,7 @@ function playCrash(ctx, t) {
     const noise = noiseBuffer(ctx, 1.2);
     const filter = ctx.createBiquadFilter(), g = ctx.createGain();
     filter.type = 'highpass'; filter.frequency.value = 5000;
-    noise.connect(filter); filter.connect(g); g.connect(ctx.destination);
+    noise.connect(filter); filter.connect(g); g.connect(getMasterOut());
     g.gain.setValueAtTime(0.5, t);
     g.gain.exponentialRampToValueAtTime(0.001, t + 1.2);
     noise.start(t);
@@ -199,7 +210,7 @@ function playCrash(ctx, t) {
 
 function playRim(ctx, t) {
     const osc = ctx.createOscillator(), g = ctx.createGain();
-    osc.connect(g); g.connect(ctx.destination);
+    osc.connect(g); g.connect(getMasterOut());
     osc.type = 'square'; osc.frequency.setValueAtTime(1200, t);
     g.gain.setValueAtTime(0.5, t);
     g.gain.exponentialRampToValueAtTime(0.001, t + 0.03);
@@ -208,7 +219,7 @@ function playRim(ctx, t) {
     const noise = noiseBuffer(ctx, 0.03);
     const f2 = ctx.createBiquadFilter(), g2 = ctx.createGain();
     f2.type = 'bandpass'; f2.frequency.value = 2000;
-    noise.connect(f2); f2.connect(g2); g2.connect(ctx.destination);
+    noise.connect(f2); f2.connect(g2); g2.connect(getMasterOut());
     g2.gain.setValueAtTime(0.4, t);
     g2.gain.exponentialRampToValueAtTime(0.001, t + 0.03);
     noise.start(t);
@@ -749,7 +760,7 @@ function playGuitarString(freq) {
 
     osc1.connect(g1); osc2.connect(g2);
     g1.connect(env); g2.connect(env);
-    env.connect(dist); dist.connect(tone); tone.connect(out); out.connect(ctx.destination);
+    env.connect(dist); dist.connect(tone); tone.connect(out); out.connect(getMasterOut());
 
     osc1.start(now); osc2.start(now);
     osc1.stop(now + 1.1); osc2.stop(now + 1.1);
@@ -784,4 +795,66 @@ GUITAR_CHORDS.forEach(chord => {
     btn.addEventListener('touchstart', e => { e.preventDefault(); strum(); }, { passive: false });
 
     guitarChordsEl.appendChild(btn);
+});
+
+// ══════════════════════════════════════════════════════════════════════════
+// RECORDING
+// ══════════════════════════════════════════════════════════════════════════
+
+let isRecording  = false;
+let mediaRecorder = null;
+let recChunks    = [];
+let recDest      = null;
+
+function getSupportedMimeType() {
+    const types = [
+        'audio/webm;codecs=opus',
+        'audio/webm',
+        'audio/ogg;codecs=opus',
+        'audio/mp4',
+    ];
+    return types.find(t => MediaRecorder.isTypeSupported(t)) || '';
+}
+
+function startRecording() {
+    recDest = getAudioCtx().createMediaStreamDestination();
+    getMasterOut().connect(recDest);
+
+    const mimeType = getSupportedMimeType();
+    mediaRecorder  = new MediaRecorder(recDest.stream, mimeType ? { mimeType } : {});
+    recChunks      = [];
+
+    mediaRecorder.ondataavailable = e => { if (e.data.size > 0) recChunks.push(e.data); };
+    mediaRecorder.onstop = () => {
+        const blob = new Blob(recChunks, { type: mediaRecorder.mimeType });
+        const ext  = blob.type.includes('ogg') ? 'ogg' : blob.type.includes('mp4') ? 'mp4' : 'webm';
+        const url  = URL.createObjectURL(blob);
+        const a    = document.createElement('a');
+        a.href     = url;
+        a.download = `scale-and-beat-${Date.now()}.${ext}`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+        getMasterOut().disconnect(recDest);
+        recDest = null;
+    };
+    mediaRecorder.start();
+}
+
+function stopRecording() {
+    if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
+}
+
+const recBtn = document.getElementById('recBtn');
+recBtn.addEventListener('click', () => {
+    if (!window.MediaRecorder) {
+        alert('이 브라우저는 녹음을 지원하지 않아요.');
+        return;
+    }
+    isRecording = !isRecording;
+    recBtn.classList.toggle('recording', isRecording);
+    recBtn.textContent = isRecording ? '⏹' : '●';
+    if (isRecording) startRecording();
+    else stopRecording();
 });
